@@ -1,0 +1,270 @@
+.portfolio-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 80px; // Tạo khoảng cách thoáng đãng giữa các Section
+}
+
+/* ==========================================================================
+   HERO SECTION
+   ========================================================================== */
+.hero-section {
+  min-height: 50vh;
+  display: flex;
+  align-items: center;
+
+  .hero-content {
+    max-width: 800px;
+
+    .greeting {
+      color: var(--primary-color);
+      font-size: 16px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .hero-name {
+      color: var(--text-white);
+      font-size: 56px;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .hero-role {
+      color: var(--text-color);
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      opacity: 0.9;
+    }
+
+    .hero-summary {
+      color: var(--text-muted);
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 36px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+
+      .btn-secondary {
+        color: var(--text-white);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        padding: 10px 20px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background-color: var(--surface-hover);
+          border-color: var(--text-muted);
+        }
+      }
+    }
+  }
+}
+
+/* ==========================================================================
+   CẤU HÌNH TIÊU ĐỀ CHUNG CHO SECTION
+   ========================================================================== */
+.section-title {
+  color: var(--text-white);
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 32px;
+  position: relative;
+  display: inline-block;
+
+  // Đường kẻ tím mảnh tinh tế dưới tiêu đề
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background-color: var(--primary-color);
+    border-radius: 2px;
+  }
+}
+
+/* ==========================================================================
+   SKILLS SECTION (Khối kỹ năng dạng Grid)
+   ========================================================================== */
+.skills-section {
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+  }
+
+  .skill-card {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 28px;
+    transition: all 0.2s ease;
+
+    h3 {
+      color: var(--text-white);
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .badge-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    // Tùy biến thêm màu Badge Tím độc quyền
+    .badge-purple {
+      background-color: rgba(155, 77, 255, 0.12);
+      color: var(--primary-hover);
+      border: 1px solid rgba(155, 77, 255, 0.25);
+    }
+    
+    .badge-blue {
+      background-color: rgba(79, 195, 247, 0.12);
+      color: var(--accent-blue);
+      border: 1px solid rgba(79, 195, 247, 0.25);
+    }
+
+    &:hover {
+      border-color: rgba(155, 77, 255, 0.4);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    }
+  }
+}
+
+/* ==========================================================================
+   PROJECTS SECTION (Danh sách Dự án hoành tráng)
+   ========================================================================== */
+.projects-section {
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 24px;
+  }
+
+  .project-card {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 240px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+
+    .project-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 14px;
+
+      h3 {
+        color: var(--text-white);
+        font-size: 19px;
+        font-weight: 600;
+        flex: 1;
+        padding-right: 10px;
+      }
+
+      .project-tag {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        background-color: var(--surface-hover);
+        color: var(--text-color);
+        padding: 4px 8px;
+        border-radius: 4px;
+        border: 1px solid var(--border-color);
+      }
+    }
+
+    .project-desc {
+      color: var(--text-color);
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+      opacity: 0.85;
+    }
+
+    .project-tech {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+
+      span {
+        font-size: 12px;
+        color: var(--text-muted);
+        background-color: rgba(0,0,0,0.15);
+        padding: 3px 8px;
+        border-radius: 4px;
+        border: 1px solid rgba(255,255,255,0.03);
+      }
+    }
+
+    // HIỆU ỨNG GLOW ÁNH TÍM ĐẶC BIỆT KHI HOVER CARD
+    &:hover {
+      background-color: var(--surface-hover);
+      border-color: var(--primary-color);
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px var(--primary-glow);
+
+      .project-header h3 {
+        color: var(--primary-hover);
+      }
+    }
+  }
+}
+
+/* ==========================================================================
+   RESPONSIVE (Tối ưu Mobile & Tablet)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .portfolio-container {
+    gap: 50px;
+    padding: 40px 16px;
+  }
+
+  .hero-section {
+    .hero-content {
+      .hero-name {
+        font-size: 38px;
+      }
+      .hero-role {
+        font-size: 20px;
+      }
+      .hero-actions {
+        flex-direction: column;
+        align-items: stretch;
+        
+        button, a {
+          text-align: center;
+        }
+      }
+    }
+  }
+
+  .projects-section {
+    .projects-grid {
+      grid-template-columns: 1fr; // Chuyển thành 1 hàng dọc trên điện thoại nhỏ
+    }
+  }
+}

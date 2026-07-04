@@ -1,0 +1,18 @@
+FROM node:24-slim
+# Thiết lập thư mục làm việc trong container
+WORKDIR /app
+
+# Cài đặt Angular CLI toàn cục trong container để dùng lệnh tạo dự án
+RUN npm install -g @angular/cli
+
+# Copy package files
+COPY package*.json ./
+
+# Cài đặt project dependencies
+RUN npm install
+
+EXPOSE 4200
+
+# Start the development server
+CMD ["npx", "ng", "serve", "--host", "0.0.0.0", "--poll", "2000"]
+# CMD ["sh"]

@@ -1,0 +1,112 @@
+/* You can add global styles to this file, and also import other style files */
+/* ==========================================================================
+   1. ĐỊNH NGHĨA BỘ MÀU DARK MODE TOÀN CỤC (CSS VARIABLES)
+   ========================================================================== */
+:root {
+  /* Nền và Bề mặt */
+  --background-color: #1e1e1e;  /* Đen VS gốc */ 
+  --surface-color: #252526;     /* Card gốc */ 
+  --surface-hover: #2d2d30;     /* Khi hover vào card hoặc item */ 
+  --border-color: #3e3e42;      /* Viền mảnh để tách biệt các phần */ 
+
+  /* Hệ màu tím chủ đạo (Brand Color) */
+  --primary-color: #9b4dff;     /* Tím chủ đạo */
+  --primary-hover: #b370ff;     /* Tím khi hover */
+  --primary-glow: rgba(155, 77, 255, 0.35);
+
+  /* Hệ màu bổ trợ (Accent Colors) */
+  --accent-blue: #4fc3f7;       /* Xanh nhẹ (Thông tin) */
+  --accent-red: #ff6b6b;        /* Đỏ nhẹ (Cảnh báo/Lỗi) */
+
+  /* Hệ màu chữ (Typography) */
+  --text-color: #d4d4d4;        /* Chữ chính */
+  --text-muted: #858585;        /* Chữ phụ, ghi chú */
+  --text-white: #ffffff;        /* Chữ nổi bật, tiêu đề */
+}
+
+/* ==========================================================================
+   2. RESET & BASE STYLES (Áp dụng cho toàn bộ trang web)
+   ========================================================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  min-height: 100vh;
+  max-width: 1400px;
+  margin: 0 auto;
+  overflow-x: hidden; /* Chống tràn chiều ngang khi mở menu trượt trên mobile */
+  -webkit-font-smoothing: antialiased; /* Giúp hiển thị chữ mịn hơn trên nền tối */
+}
+
+/* Định cấu hình thanh cuộn (Scrollbar) chuẩn Dark Mode giống VS Code */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background-color);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 5px;
+  &:hover {
+    background: var(--text-muted);
+  }
+}
+
+/* ==========================================================================
+   3. GLOBAL UTILITIES (Các thành phần dùng chung hệ thống)
+   ========================================================================== */
+
+/* Nút bấm chính màu Tím */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary-color);
+  color: var(--text-white);
+  border: none;
+  padding: 10px 20px;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: var(--primary-hover);
+    box-shadow: 0 0 12px var(--primary-color);
+  }
+
+  &:active {
+    transform: scale(0.98); /* Hiệu ứng lún nút nhẹ khi bấm */
+  }
+}
+
+/* Các thẻ trạng thái (Badges) ngắn gọn bằng SCSS Nesting */
+.badge {
+  display: inline-block;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 4px;
+  border: 1px solid transparent;
+
+  &-info {
+    background-color: rgba(79, 195, 247, 0.15);
+    color: var(--accent-blue);
+    border-color: rgba(79, 195, 247, 0.3);
+  }
+
+  &-danger {
+    background-color: rgba(255, 107, 107, 0.15);
+    color: var(--accent-red);
+    border-color: rgba(255, 107, 107, 0.3);
+  }
+}

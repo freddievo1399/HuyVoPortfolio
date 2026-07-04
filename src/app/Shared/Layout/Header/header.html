@@ -1,0 +1,20 @@
+<header class="site-header">
+  <div class="header-container">
+    <div class="logo">
+      <a href="/">HuyVo</a>
+    </div>
+
+    <nav class="nav-links" [ngClass]="{ 'open': isMenuOpen }">
+      <a href="#" (click)="closeMenu()">Thông tin</a>
+      <a href="#" (click)="closeMenu()">Dự án</a>
+      <a href="/chat" (click)="closeMenu()">Phòng chat demo</a>
+      <a href="#" (click)="closeMenu()">Liên hệ</a>
+    </nav>
+
+    <button class="menu-toggle" (click)="toggleMenu()" aria-label="Toggle navigation">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+  </div>
+</header>

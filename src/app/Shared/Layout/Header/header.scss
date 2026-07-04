@@ -1,0 +1,123 @@
+/* --- CẤU HÌNH CHUNG & STICKY TOP --- */
+.site-header {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  
+  // THAY ĐỔI: Chuyển sang màu nền tối sâu của VS Code
+  background-color: var(--background-color); 
+  
+  // Thêm viền dưới mảnh để tạo ranh giới rõ ràng với nội dung khi cuộn trang
+  border-bottom: 1px solid var(--border-color); 
+  
+  // Giảm nhẹ bóng mờ cho đỡ bị "gai" trên nền tối
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); 
+  z-index: 1000;
+
+  .header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 15px 20px;
+  }
+
+  .logo {
+    a {
+      font-size: 24px;
+      font-weight: bold;
+      text-decoration: none;
+      color: var(--text-white); // Chữ trắng nổi bật
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: var(--primary-color); // Di chuột vào logo đổi sang màu tím chủ đạo
+      }
+    }
+  }
+}
+
+/* --- GIAO DIỆN PC (Mặc định) --- */
+.nav-links {
+  a {
+    margin-left: 24px;
+    text-decoration: none;
+    color: var(--text-color); // Màu chữ chính (xám sáng)
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &:hover {
+      color: var(--primary-hover); // Màu tím sáng khi hover
+      text-shadow: 0 0 8px var(--primary-glow); // Hiệu ứng text hơi phát sáng nhẹ
+    }
+  }
+}
+
+.menu-toggle {
+  display: none; // Ẩn nút mobile trên PC
+  cursor: pointer;
+  background: none;
+  border: none;
+
+  .bar {
+    display: block;
+    width: 25px;
+    height: 3px;
+    margin: 5px auto;
+    background-color: var(--text-color); // Ba gạch ngang màu xám sáng
+    transition: all 0.3s ease-in-out;
+  }
+
+  &:hover .bar {
+    background-color: var(--primary-color); // Hover vào nút đổi sang màu Tím
+  }
+}
+
+/* --- RESPONSIVE: MOBILE & TABLET (Dưới 768px) --- */
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block; // Hiện nút bấm hamburger trên mobile
+  }
+
+  .nav-links {
+    position: fixed;
+    right: -100%; // Giấu hoàn toàn menu về bên phải màn hình
+    top: 61px;    // Khớp với chiều cao header (đã tính 1px border)
+    width: 260px; 
+    height: calc(100vh - 61px); 
+    
+    // Tận dụng màu nền tối sâu của VS Code cho thanh trượt mobile
+    background-color: var(--background-color); 
+    border-left: 1px solid var(--border-color);
+    
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    padding-top: 40px;
+    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); // Hiệu ứng trượt mượt hơn
+    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.5);
+
+    a {
+      margin: 12px 0;
+      font-size: 18px;
+      width: 80%;
+      padding: 10px 0;
+      text-align: center;
+      border-radius: 6px;
+
+      // Khi hover menu trên Mobile, tạo một lớp nền nhẹ bao quanh chữ
+      &:hover {
+        background-color: var(--surface-hover);
+        color: var(--primary-hover);
+      }
+    }
+
+    // Khi Angular kích hoạt class 'open' qua [ngClass]
+    &.open {
+      right: 0;
+    }
+  }
+}
