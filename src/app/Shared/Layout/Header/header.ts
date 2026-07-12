@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { NgClass } from "@angular/common";
+import { RouterLinkActive, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-header',
-  imports: [NgClass],
+  imports: [NgClass,RouterModule,RouterLinkActive],
   templateUrl: './header.html',
   styleUrl: './header.scss',
 })

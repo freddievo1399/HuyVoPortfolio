@@ -4,11 +4,14 @@
       <a href="/">HuyVo</a>
     </div>
 
+    <!-- THAY ĐỔI: Sử dụng routerLink và routerLinkActive -->
     <nav class="nav-links" [ngClass]="{ 'open': isMenuOpen }">
-      <a href="#" (click)="closeMenu()">Thông tin</a>
-      <a href="#" (click)="closeMenu()">Dự án</a>
-      <a href="/chat" (click)="closeMenu()">Phòng chat demo</a>
-      <a href="#" (click)="closeMenu()">Liên hệ</a>
+      <!-- routerLinkActive="active-link" sẽ thêm class 'active-link' khi URL khớp -->
+      <!-- [routerLinkActiveOptions]="{exact: true}" đảm bảo link trang chủ chỉ active khi URL là "/" -->
+      <a routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" (click)="closeMenu()">Thông tin</a>
+      
+      <!-- Link này sẽ active khi URL bắt đầu bằng "/chat" -->
+      <a routerLink="/chat" routerLinkActive="active-link" (click)="closeMenu()">Phòng chat demo</a>
     </nav>
 
     <button class="menu-toggle" (click)="toggleMenu()" aria-label="Toggle navigation">
