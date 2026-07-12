@@ -24,7 +24,6 @@ export class HubChatSignalR {
   private hubUrl = `${EXTERNAL_URLS.serverChat}/Hub/Chat`; // URL của Hub SignalR
 
   // Promise để theo dõi trạng thái khởi tạo kết nối.
-  private connectionPromise: Promise<void>;
 
   // --- Subjects để quản lý các luồng dữ liệu (Streams) ---
   private readonly messageReceivedSubject = new Subject<Message>();
@@ -37,26 +36,25 @@ export class HubChatSignalR {
   public readonly connectionState$: Observable<ConnectionStatus> = this.connectionStateSubject.asObservable();
 
   constructor() {
-    this.connectionPromise = this._ensureConnectionStarted();
   }
 
   /**
    * Đảm bảo kết nối SignalR được khởi tạo và bắt đầu.
    * Phương thức này sẽ thiết lập kết nối và đăng ký các sự kiện hub.
    */
-  private async _ensureConnectionStarted(): Promise<void> {
+  public async Init(): Promise<void> {
     // Nếu đã có kết nối và không phải là trạng thái 'Disconnected', không cần làm gì cả.
     if (this.hubConnection && this.hubConnection.state !== HubConnectionState.Disconnected) {
       return;
     }
     this.hubConnection = new signalR.HubConnectionBuilder()
-    .withUrl(this.hubUrl, signalR.HttpTransportType.WebSockets)
-    .withAutomaticReconnect()
-    .build();
-    
+      .withUrl(this.hubUrl, signalR.HttpTransportType.WebSockets)
+      .withAutomaticReconnect()
+      .build();
+
     // Đăng ký các sự kiện từ hub để phát dữ liệu vào các luồng (Observables)
     this._registerHubEvents();
-    
+
     try {
       await this.hubConnection.start();
     } catch (err) {
@@ -113,7 +111,6 @@ export class HubChatSignalR {
    * Hàm nội bộ để đảm bảo kết nối sẵn sàng trước khi gọi một phương thức trên hub.
    */
   private async invokeWithConnection<T>(methodName: string, ...args: any[]): Promise<T> {
-    await this.connectionPromise; // Đợi cho đến khi kết nối được thiết lập thành công
     return this.hubConnection.invoke<T>(methodName, ...args);
   }
 }

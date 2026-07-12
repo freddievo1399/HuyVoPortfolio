@@ -1,7 +1,10 @@
 import { InjectionToken } from '@angular/core';
+// import { environment } from '../../environments/environment';
 
 export const EXTERNAL_URLS = {
-    serverChat:"https://huyvoportfolio-drf0cwgzf2akbvfs.eastasia-01.azurewebsites.net/",
+    // Ưu tiên sử dụng URL từ biến môi trường (dành cho Docker).
+    // Nếu không có, sẽ dùng URL mặc định (dành cho local dev không Docker).
+    serverChat: "http://localhost:8080",
 };
 
 // Khai báo InjectionToken để có thể DI (Dependency Injection) nếu cần

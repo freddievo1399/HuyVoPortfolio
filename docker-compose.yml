@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # Dịch vụ Frontend (Angular App)
   angular-app:
     build:
       context: .
@@ -10,8 +11,26 @@ services:
       - "4200:4200"
     volumes:
       - .:/app
+      - /app/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
       - NG_CLI_ANALYTICS=false
+      # XÓA BIẾN CORS Ở ĐÂY VÌ FRONTEND KHÔNG CẦN DÙNG
     stdin_open: true
     tty: true
+    depends_on:
+      - signalr-backend
+
+  # Dịch vụ Backend (SignalR App)
+  signalr-backend:
+    image: freddievo/signalrchat:latest
+    container_name: signalr_backend_container
+    ports:
+      - "8080:8080"
+    # CHUYỂN HOẶC BỔ SUNG VÀO ĐÂY:
+    environment:
+      - Cors__AllowedOrigins__0=http://localhost:4200
+
+networks:
+  default:
+    name: chat-app-network

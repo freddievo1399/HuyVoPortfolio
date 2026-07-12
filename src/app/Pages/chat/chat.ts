@@ -79,6 +79,8 @@ export class ChatComponent implements OnInit, OnDestroy {
         }
       } while (!this.isServerRunning); // Lặp lại cho đến khi server "thức giấc"
 
+      await this.HubChatSignalR.Init();
+
       // Đăng ký lắng nghe các luồng sự kiện từ SignalR sau khi server đã sẵn sàng.
       this.HubChatSignalR.messageReceived$
         .pipe(takeUntil(this.destroy$))
