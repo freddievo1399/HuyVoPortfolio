@@ -49,7 +49,9 @@
     font-weight: 500;
     transition: all 0.2s ease;
 
-    &:hover {
+    // THAY ĐỔI: Áp dụng hiệu ứng cho cả khi hover và khi link đang active
+    &:hover,
+    &.active-link {
       color: var(--primary-hover); // Màu tím sáng khi hover
       text-shadow: 0 0 8px var(--primary-glow); // Hiệu ứng text hơi phát sáng nhẹ
     }
