@@ -39,6 +39,9 @@ testem.log
 /typings
 __screenshots__/
 
+# Bỏ qua các file cấu hình tùy chỉnh
+/src/app/Constants/external-urls.ts
+
 # System files
 .DS_Store
 Thumbs.db
