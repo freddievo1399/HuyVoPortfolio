@@ -1,0 +1,13 @@
+<h1 mat-dialog-title>Chào mừng bạn đến với phòng chat!</h1>
+<div mat-dialog-content>
+  <p>Vui lòng nhập tên bạn muốn sử dụng để tham gia trò chuyện.</p>
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Tên của bạn</mat-label>
+    <input matInput [(ngModel)]="userName" (keydown.enter)="onSetUsername()" cdkFocusInitial>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-flat-button color="primary" (click)="onSetUsername()" [disabled]="!userName.trim()">
+    Tham gia
+  </button>
+</div>

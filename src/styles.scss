@@ -1,27 +1,66 @@
-/* You can add global styles to this file, and also import other style files */
-/* ==========================================================================
-   1. ĐỊNH NGHĨA BỘ MÀU DARK MODE TOÀN CỤC (CSS VARIABLES)
-   ========================================================================== */
-:root {
-  /* Nền và Bề mặt */
-  --background-color: #1e1e1e;  /* Đen VS gốc */ 
-  --surface-color: #252526;     /* Card gốc */ 
-  --surface-hover: #2d2d30;     /* Khi hover vào card hoặc item */ 
-  --border-color: #3e3e42;      /* Viền mảnh để tách biệt các phần */ 
+@use '@angular/material' as mat;
 
-  /* Hệ màu tím chủ đạo (Brand Color) */
-  --primary-color: #9b4dff;     /* Tím chủ đạo */
-  --primary-hover: #b370ff;     /* Tím khi hover */
+:root {
+  /* 1. Bộ màu phong cách VS Code của bạn */
+  --background-color: #1e1e1e;
+  --surface-color: #252526;
+  --surface-hover: #2d2d30;
+  --border-color: #3e3e42;
+
+  --primary-color: #9b4dff;
+  /* Tím chủ đạo */
+  --primary-hover: #b370ff;
   --primary-glow: rgba(155, 77, 255, 0.35);
 
-  /* Hệ màu bổ trợ (Accent Colors) */
-  --accent-blue: #4fc3f7;       /* Xanh nhẹ (Thông tin) */
-  --accent-red: #ff6b6b;        /* Đỏ nhẹ (Cảnh báo/Lỗi) */
+  --accent-blue: #4fc3f7;
+  --accent-red: #ff6b6b;
 
-  /* Hệ màu chữ (Typography) */
-  --text-color: #d4d4d4;        /* Chữ chính */
-  --text-muted: #858585;        /* Chữ phụ, ghi chú */
-  --text-white: #ffffff;        /* Chữ nổi bật, tiêu đề */
+  --text-color: #d4d4d4;
+  --text-muted: #858585;
+
+  /* 2. Ép Angular Material 3 dùng bộ màu của bạn */
+  --mat-sys-surface: var(--surface-color);
+  /* Nền các thành phần (Card, Dialog) */
+  --mat-sys-on-surface: var(--text-color);
+  /* Màu chữ trên nền surface */
+  --mat-sys-primary: var(--primary-color);
+  /* Màu chủ đạo (Nút bấm, checkbox...) */
+
+  /* Cấu hình riêng cho Dialog góc cạnh chuẩn VS Code (Bỏ bo tròn quá mức của Google) */
+  --mdc-dialog-container-shape: 4px;
+}
+
+html {
+  height: 100%;
+  @include mat.theme((color: (theme-type: dark,
+        /* <--- ĐỔI THÀNH DARK để kích hoạt chế độ tối */
+        primary: mat.$violet-palette,
+        /* Dùng bảng màu tím làm mồi cho Material 3 */
+      ),
+      typography: Roboto,
+      density: 0,
+    ));
+}
+
+body {
+  /* Báo cho trình duyệt biết đây là ứng dụng giao diện tối */
+  color-scheme: dark;
+  /* <--- Đổi từ light sang dark */
+
+  /* Áp dụng màu nền tổng thể của VS Code cho toàn bộ website */
+  background-color: var(--background-color);
+  /* <--- Ép nền app thành màu #1e1e1e */
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+
+  margin: 0;
+  height: 100%;
+}
+
+/* --- Bạn có thể viết thêm CSS Custom cho Dialog ở dưới này nếu cần --- */
+.mat-mdc-dialog-container .mdc-dialog__surface {
+  border: 1px solid var(--border-color) !important;
+  /* Thêm viền mảnh VS Code cho Dialog */
 }
 
 /* ==========================================================================
@@ -40,8 +79,10 @@ body {
   min-height: 100vh;
   max-width: 1400px;
   margin: 0 auto;
-  overflow-x: hidden; /* Chống tràn chiều ngang khi mở menu trượt trên mobile */
-  -webkit-font-smoothing: antialiased; /* Giúp hiển thị chữ mịn hơn trên nền tối */
+  overflow-x: hidden;
+  /* Chống tràn chiều ngang khi mở menu trượt trên mobile */
+  -webkit-font-smoothing: antialiased;
+  /* Giúp hiển thị chữ mịn hơn trên nền tối */
 }
 
 /* Định cấu hình thanh cuộn (Scrollbar) chuẩn Dark Mode giống VS Code */
@@ -49,12 +90,15 @@ body {
   width: 10px;
   height: 10px;
 }
+
 ::-webkit-scrollbar-track {
   background: var(--background-color);
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--border-color);
   border-radius: 5px;
+
   &:hover {
     background: var(--text-muted);
   }
@@ -85,7 +129,8 @@ body {
   }
 
   &:active {
-    transform: scale(0.98); /* Hiệu ứng lún nút nhẹ khi bấm */
+    transform: scale(0.98);
+    /* Hiệu ứng lún nút nhẹ khi bấm */
   }
 }
 
@@ -108,5 +153,40 @@ body {
     background-color: rgba(255, 107, 107, 0.15);
     color: var(--accent-red);
     border-color: rgba(255, 107, 107, 0.3);
+  }
+}
+
+/* ==========================================================================
+   4. cấu hình tool típ)
+   ========================================================================== */
+
+/* Nút bấm chính màu Tím */
+.custom-tooltip-box {
+  position: absolute;
+  background-color: #121214;
+  /* Màu nền tối sẫm giống ảnh mẫu */
+  color: var(--text-color);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  max-width: 250px;
+  z-index: 9999;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  /* Tránh cản trở chuột */
+
+  // Căn giữa bóng theo trục X và đẩy ngược lên
+  transform: translate(-50%, -100%) scale(0.95);
+  opacity: 0;
+  transition:
+    transform 0.15s ease-out,
+    opacity 0.15s ease-out;
+
+  // Hiệu ứng hiện hình khi class .show được thêm vào
+  &.show {
+    opacity: 1;
+    transform: translate(-50%, -100%) scale(1);
   }
 }

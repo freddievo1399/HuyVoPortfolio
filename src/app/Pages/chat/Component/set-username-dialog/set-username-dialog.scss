@@ -1,0 +1,43 @@
+// Ghi chú: Các màu nền, viền, và màu nút chính đã được áp dụng toàn cục trong styles.scss.
+// Tệp này chỉ tinh chỉnh các chi tiết bên trong dialog cho đẹp hơn.
+
+h1[mat-dialog-title] {
+  font-weight: 600;
+  // Đảm bảo tiêu đề có màu chữ chính, nổi bật
+  color: var(--text-color);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+}
+
+div[mat-dialog-content] {
+  text-align: center; // Căn giữa toàn bộ nội dung (chữ và ô input)
+  p {
+    // Dùng màu chữ phụ cho đoạn mô tả để giảm sự nổi bật
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+}
+
+// Tinh chỉnh ô nhập liệu cho giống VS Code hơn
+mat-form-field {
+  width: 100%; // Đảm bảo ô input chiếm hết chiều rộng được cấp
+  // Khi ô input được focus, thêm hiệu ứng viền và bóng mờ màu tím
+  &.mat-focused {
+    .mat-mdc-form-field-focus-overlay {
+      // Tắt lớp overlay mặc định của Material
+      display: none;
+    }
+
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: var(--primary-color) !important;
+      border-width: 1px;
+    }
+
+    // Thêm hiệu ứng phát sáng nhẹ
+    box-shadow: 0 0 8px -2px var(--primary-glow);
+  }
+}

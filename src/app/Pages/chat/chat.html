@@ -1,1 +1,120 @@
-<p>chat works!</p>
+<div class="chat-container">
+    <button type="button" class="toggle-sidebar-btn" [ngClass]="isSidebarExpanded ? 'expanded' : 'collapsed'"
+        (click)="onToggleSidebar()">
+        <i class="fa-solid" [ngClass]="isSidebarExpanded ? 'fa-chevron-left' : 'fa-chevron-right'"></i>
+    </button>
+
+    <!-- 1. DANH SÁCH PHÒNG (SIDEBAR TRÁI) -->
+    <div class="left-sidebar" [class.collapsed]="!isSidebarExpanded">
+        <div class="sidebar-header">
+            <h2>Danh sách phòng</h2>
+            <button type="button" class="icon-btn header-action" [appTooltip]="'Tham gia phòng'" (click)="onJoinRoom()">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+        </div>
+
+        <div class="room-list">
+            <!-- Lặp danh sách phòng -->
+            @for (room of rooms(); track $index) {
+
+            <div class="room-item" [class.active]="room.roomId === currentRoomId()" (click)="onChangeRoom(room.roomId)">
+                <div class="room-avatar">
+                    <i class="fa-solid " [ngClass]="room.roomId === currentRoomId() ? 'fa-coffee' : 'fa-users'"></i>
+                </div>
+                <div class="room-info">
+                    <div class="room-meta">
+                        <p class="room-name">{{ room.roomName }}</p>
+                        @if (hasUnreadMessages(room.roomId)) {
+                        <span class="room-new-message-sticker" [appTooltip]="`Tin nhắn mới`"></span>
+                        }
+                    </div>
+                    @if ($index!=0) {
+
+                    <button type="button" class="delete-room-btn" (click)="$event.stopPropagation(); onDeleteRoom(room)"
+                        title="Xóa phòng">
+                        <i class="fa-regular fa-trash-can"></i>
+                    </button>
+                    }
+                </div>
+            </div>
+            }
+            <div class="room-item" (click)="onCreateNewRoom()">
+                <div class="room-avatar">
+                    <i class="fa-solid fa-plus"></i>
+                </div>
+                <div class="room-info">
+                    <div class="room-meta">
+                        <p class="room-name">Tạo phòng mới</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. THOẠI CHAT VÀ NHÂN TIN (KHUNG CHÍNH) -->
+    <div class="main-chat-area">
+        <!-- Header Khung Chat -->
+        <div class="chat-header">
+            <div class="header-left">
+                <div class="room-title-group">
+                    <h3>{{ currentRoom()?.roomName??'Phòng chat'}}</h3>
+                    <p class="online-status">
+                        <span class="status-dot"></span> 3 online
+                    </p>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <button type="button" class="share-btn" (click)="onUserRename()">
+                    Chào {{userName()}} (đổi tên)
+                </button>
+                <button type="button" class="share-btn" (click)="onShareRoomCode()">
+                    <i class="fa-solid fa-share-nodes"></i> RoomId
+                </button>
+                <button type="button" class="share-btn" (click)="onShareRoomLink()">
+                    <i class="fa-solid fa-share-nodes"></i> Share
+                </button>
+                <button type="button" class="icon-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+            </div>
+        </div>
+
+        <!-- Vùng nội dung thoại chat -->
+        <div class="chat-messages-area" #chatMessagesArea (scroll)="onChatScroll()">
+            <!-- Lặp danh sách tin nhắn -->
+            @for (msg of currentMessages(); track $index) {
+            @if (isSystemMessage(msg)) {
+            <div class="system-message">{{ msg.messageValue }}</div>
+            }
+            @else {
+            <div class="message-wrapper" [class.me]="msg.userName === userName()">
+                <div class="msg-avatar">{{ msg.userName.charAt(0) }}</div>
+                <div class="msg-body">
+                    <span class="msg-sender">{{ msg.userName }}</span>
+                    <div class="msg-bubble">
+                        <p>{{ msg.messageValue }}</p>
+                    </div>
+                </div>
+            </div>
+            }
+            }
+        </div>
+
+        @if (!isUserNearBottom()) {
+        <button type="button" class="scroll-to-bottom-btn" (click)="scrollToLatestMessage()" title="Tin nhắn mới">
+            <i class="fa-solid fa-arrow-down"></i>
+            <!-- isnewMessage -->
+        </button>
+        }
+
+        <!-- Vùng nhập tin nhắn -->
+        <div class="chat-input-area">
+            <div class="input-box-container">
+                <input type="text" [(ngModel)]="newMessage" (keydown.enter)="onSendMessage()"
+                    placeholder="Nhập tin nhắn..." />
+                <button type="button" class="send-btn" (click)="onSendMessage()" [disabled]="!newMessage.trim()">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

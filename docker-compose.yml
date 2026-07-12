@@ -10,10 +10,8 @@ services:
       - "4200:4200"
     volumes:
       - .:/app
-      # - /app/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
-      # 🚨 THÊM DÒNG NÀY ĐỂ BỎ QUA CÂU HỎI KHẢO SÁT:
       - NG_CLI_ANALYTICS=false
     stdin_open: true
     tty: true

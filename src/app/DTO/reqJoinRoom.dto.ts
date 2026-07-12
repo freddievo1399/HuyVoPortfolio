@@ -1,4 +1,4 @@
-export interface ReqJoinRoomDto {
-    RoomId: string;
-    UserName: string;
+export interface ReqJoinRoom {
+    roomId: string;
+    userName: string;
 }

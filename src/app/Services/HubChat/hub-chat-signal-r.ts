@@ -1,121 +1,119 @@
-import { Injectable, signal, DestroyRef, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
-import { MessageDto } from '../../DTO/message.dto';
-import { ReqJoinRoomDto } from '../../DTO/reqJoinRoom.dto';
-import { Result } from '../../DTO/result';
+import { HubConnectionState } from '@microsoft/signalr';
+import { Subject, Observable, from, defer } from 'rxjs';
+import { Message } from '../../DTO/message.dto';
+import { ReqJoinRoom } from '../../DTO/reqJoinRoom.dto';
+import { Result, ResultOf } from '../../DTO/result';
+import { EXTERNAL_URLS } from '../../Constants/external-urls';
+
+/**
+ * Enum đại diện cho các trạng thái kết nối của SignalR.
+ */
+export enum ConnectionStatus {
+  Reconnecting,
+  Reconnected,
+  Disconnected
+}
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class HubChatSignalR {
-  private readonly destroyRef = inject(DestroyRef);
-  private hubConnection: signalR.HubConnection | null = null;
-  private listenersRegistered = false;
-  private readonly messageHandlers = new Set<(message: MessageDto) => void>();
+  private hubConnection!: signalR.HubConnection;
+  private hubUrl = `${EXTERNAL_URLS.serverChat}/Hub/Chat`; // URL của Hub SignalR
 
-  public isConnected = signal<boolean>(false);
+  // Promise để theo dõi trạng thái khởi tạo kết nối.
+  private connectionPromise: Promise<void>;
+
+  // --- Subjects để quản lý các luồng dữ liệu (Streams) ---
+  private readonly messageReceivedSubject = new Subject<Message>();
+  private readonly connectionStateSubject = new Subject<ConnectionStatus>();
+
+  // --- Observables công khai để các component khác có thể đăng ký ---
+  /** Luồng (Observable) phát ra tin nhắn mới khi nhận được từ hub. */
+  public readonly messageReceived$: Observable<Message> = this.messageReceivedSubject.asObservable();
+  /** Luồng (Observable) phát ra trạng thái kết nối (đang kết nối lại, đã kết nối lại). */
+  public readonly connectionState$: Observable<ConnectionStatus> = this.connectionStateSubject.asObservable();
 
   constructor() {
-    this.destroyRef.onDestroy(() => {
-      void this.stopConnection();
-    });
+    this.connectionPromise = this._ensureConnectionStarted();
   }
 
-  public async startConnection(): Promise<Result> {
-    if (this.hubConnection?.state === signalR.HubConnectionState.Connected) {
-      return { Success: false, Message: 'Already connected.' };
-    }
-
-    this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl('http://localhost:32768/Hub/Chat', {
-        skipNegotiation: true,
-        transport: signalR.HttpTransportType.WebSockets,
-      })
-      .withAutomaticReconnect()
-      .build();
-
-    this.hubConnection.onreconnecting(() => this.isConnected.set(false));
-    this.hubConnection.onreconnected(() => this.isConnected.set(true));
-    this.hubConnection.onclose(() => this.isConnected.set(false));
-
-    try {
-      await this.hubConnection.start();
-      this.isConnected.set(true);
-      this.registerListeners();
-      return { Success: true, Message: 'Connection started successfully.' };
-    } catch {
-      this.isConnected.set(false);
-      return { Success: false, Message: 'Failed to start connection.' };
-    }
-  }
-
-  public async stopConnection(): Promise<void> {
-    if (this.hubConnection) {
-      try {
-        await this.hubConnection.stop();
-      } catch {
-        // Ignore shutdown errors.
-      }
-
-      this.hubConnection = null;
-      this.listenersRegistered = false;
-      this.isConnected.set(false);
-    }
-  }
-
-  public onMessageReceived(callback: (message: MessageDto) => void): () => void {
-    this.messageHandlers.add(callback);
-    return () => this.messageHandlers.delete(callback);
-  }
-
-  public async sendMessage(messageDto: MessageDto): Promise<Result> {
-    this.ensureConnected();
-    try {
-      await this.hubConnection!.invoke('SendMessage', messageDto);
-      return { Success: true, Message: 'Message sent successfully.' };
-    } catch {
-      return { Success: false, Message: 'Failed to send message.' };
-    }
-  }
-
-  public async joinRoom(reqJoinRoomDto: ReqJoinRoomDto): Promise<Result> {
-    this.ensureConnected();
-    try {
-      await this.hubConnection!.invoke('JoinRoom', reqJoinRoomDto);
-      return { Success: true, Message: 'Successfully joined the room.' };
-    } catch {
-      return { Success: false, Message: 'Failed to join the room.' };
-    }
-  }
-
-  public async leaveRoom(reqJoinRoomDto: ReqJoinRoomDto): Promise<Result> {
-    this.ensureConnected();
-    try {
-      await this.hubConnection!.invoke('LeaveRoom', reqJoinRoomDto);
-      return { Success: true, Message: 'Successfully left the room.' };
-    } catch {
-      return { Success: false, Message: 'Failed to leave the room.' };
-    }
-  }
-
-  private registerListeners(): void {
-    if (this.listenersRegistered || !this.hubConnection) {
+  /**
+   * Đảm bảo kết nối SignalR được khởi tạo và bắt đầu.
+   * Phương thức này sẽ thiết lập kết nối và đăng ký các sự kiện hub.
+   */
+  private async _ensureConnectionStarted(): Promise<void> {
+    // Nếu đã có kết nối và không phải là trạng thái 'Disconnected', không cần làm gì cả.
+    if (this.hubConnection && this.hubConnection.state !== HubConnectionState.Disconnected) {
       return;
     }
-
-    this.hubConnection.on('ReceiveMessage', (messageDto: MessageDto) => {
-      this.notifyMessageReceived(messageDto);
-    });
-    this.listenersRegistered = true;
-  }
-
-  private notifyMessageReceived(message: MessageDto): void {
-    this.messageHandlers.forEach((handler) => handler(message));
-  }
-
-  private ensureConnected(): void {
-    if (!this.hubConnection || this.hubConnection.state !== signalR.HubConnectionState.Connected) {
-      throw new Error('SignalR hub connection is not established.');
+    this.hubConnection = new signalR.HubConnectionBuilder()
+    .withUrl(this.hubUrl, signalR.HttpTransportType.WebSockets)
+    .withAutomaticReconnect()
+    .build();
+    
+    // Đăng ký các sự kiện từ hub để phát dữ liệu vào các luồng (Observables)
+    this._registerHubEvents();
+    
+    try {
+      await this.hubConnection.start();
+    } catch (err) {
+      console.error('Error starting SignalR Hub connection:', err);
+      // Ném lỗi ra ngoài để Promise bị reject nếu kết nối thất bại
+      throw err;
     }
+  }
+
+  /**
+   * Đăng ký các trình xử lý sự kiện cho hub connection.
+   * Các sự kiện này sẽ phát dữ liệu vào các Subject tương ứng.
+   */
+  private _registerHubEvents(): void {
+    this.hubConnection.on('ReceiveMessage', (message: Message) => {
+      this.messageReceivedSubject.next(message);
+    });
+
+    this.hubConnection.onreconnecting((error) => {
+      console.warn('SignalR is reconnecting...', error);
+      this.connectionStateSubject.next(ConnectionStatus.Reconnecting);
+    });
+
+    this.hubConnection.onreconnected((connectionId) => {
+      this.connectionStateSubject.next(ConnectionStatus.Reconnected);
+    });
+
+    this.hubConnection.onclose((error) => {
+      console.error('SignalR connection closed.', error);
+      this.connectionStateSubject.next(ConnectionStatus.Disconnected);
+    });
+  }
+
+  /**
+   * Gọi phương thức 'JoinRoom' trên hub.
+   * @param req - Dữ liệu yêu cầu để tham gia phòng.
+   * @returns Một Observable sẽ phát ra kết quả từ hub.
+   */
+  public joinRoom(req: ReqJoinRoom): Observable<Result> {
+    // defer đảm bảo logic async chỉ chạy khi có người subscribe.
+    // from chuyển Promise thành Observable.
+    return defer(() => from(this.invokeWithConnection<Result>('JoinRoom', req)));
+  }
+
+  public leaveRoom(req: string): Observable<Result> {
+    return defer(() => from(this.invokeWithConnection<Result>('LeaveRoom', `RoomID:${req}`)));
+  }
+
+  public sendMessage(message: Message): Observable<ResultOf<Message>> {
+    return defer(() => from(this.invokeWithConnection<ResultOf<Message>>('SendMessage', message)));
+  }
+
+  /**
+   * Hàm nội bộ để đảm bảo kết nối sẵn sàng trước khi gọi một phương thức trên hub.
+   */
+  private async invokeWithConnection<T>(methodName: string, ...args: any[]): Promise<T> {
+    await this.connectionPromise; // Đợi cho đến khi kết nối được thiết lập thành công
+    return this.hubConnection.invoke<T>(methodName, ...args);
   }
 }

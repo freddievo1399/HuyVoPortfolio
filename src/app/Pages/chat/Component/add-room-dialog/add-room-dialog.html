@@ -1,0 +1,14 @@
+<h2 mat-dialog-title>Tạo phòng mới</h2>
+
+<mat-dialog-content>
+  <p>Đặt tên cho phòng chat mới của bạn. Tên phòng sẽ được hiển thị cho tất cả mọi người.</p>
+  <mat-form-field appearance="outline">
+    <mat-label>Tên phòng</mat-label>
+    <input matInput [(ngModel)]="roomName" (keydown.enter)="onSave()" cdkFocusInitial placeholder="Ví dụ: Bàn chuyện dự án X">
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Hủy</button>
+  <button mat-flat-button color="primary" [disabled]="!roomName.trim()" (click)="onSave()">Tạo phòng</button>
+</mat-dialog-actions>
